@@ -1,5 +1,4 @@
 #include "graphsort.h"
-#include <algorithm>
 
 using namespace std;
 
@@ -45,25 +44,16 @@ int main(int argc, char* argv[]) {
     //sort the initilization graph file
     sort(initg.nodes.begin(), initg.nodes.end(), compareByNodeSize);
 
-    int graphsize = initg.size;
-
-    // for (int i=0; i<graphsize; i++) {
-    //     cout << initg.nodes[i].size << " ";
-    // }
-    // cout << endl;
-
-    // for (int i=0; i<graphsize; i++) {
-    //     for (int i : initg.nodes[i].nums) {
-    //         cout << i << " ";
-    //     }
-    //     cout << endl;
-    // }
+    printnodes(initg);
 
     graph g;
 
     //loop through and add each node to the new graph according to the following algorithm
     
     for (node * n : initg.nodes) {
+        // cout << "Adding node: ";
+        // printnode(n);
+        // printgraph(g);
         //add node to graph
         g.nodes.push_back(n);
 
@@ -73,39 +63,19 @@ int main(int argc, char* argv[]) {
 
         */
 
-        //check each head branch for a connection
-        for (node *cur : g.headnodes) {
-            //while the cur node has nodes going into it/
-            node *next = nullptr;
-            while(!cur->in.empty()) {
-                bool curNodeContainsNums = true;
-
-                for (int num : n->nums) {
-                    if (binary_search(cur->nums.begin(), cur->nums.end(), num) == false) {
-                        curNodeContainsNums = false;
-                        break;
-                    }
-                }
-
-                if (curNodeContainsNums) {
-                    next = cur;
-                }
-            }
-            //check if a connection was made for this head branch
-            if (next != nullptr) {
-                n->out.push_back(next);
-            }
+        for (node * cur : g.headnodes) {
+            checkBranch(n, cur);
         }
 
         //check if the node that we added made any connections: if it didn't then add it to the headnodes of the graph
-        if(n->out.size() == 0) {
+        if(n->out.empty()) {
             g.headnodes.push_back(n);
         }
     }
     
 
     printgraph(g);
-    printgraphheadnodes(g);
+    //printgraphheadnodes(g);
 
 
     return -1;

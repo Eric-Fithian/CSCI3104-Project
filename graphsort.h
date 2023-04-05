@@ -3,6 +3,7 @@
 #include <fstream>
 #include <string>
 #include <sstream>
+#include <algorithm>
 
 using namespace std;
 
@@ -23,14 +24,24 @@ bool compareByNodeSize(node *a, node *b) {
     return a->size > b->size;
 }
 
-void printgraph(graph g) {
+void printnode(node * n) {
+    for (int num : n->nums) {
+        cout << num << ",";
+    }
+    cout << endl;
+}
+
+void printnodes(graph g) {
     for (node *cur_n : g.nodes) {
-        cout << "Node: ";
         for (int num : cur_n->nums) {
             cout << num << ",";
         }
         cout << endl;
-        cout << "Edges: " << endl;
+    }
+}
+
+void printgraph(graph g) {
+    for (node *cur_n : g.nodes) {
         for (node *out_n : cur_n->out) {
             //print cur node nums
             for (int num : cur_n->nums) {
@@ -56,8 +67,46 @@ void printgraphheadnodes(graph g) {
     }
 }
 
-void checkBranches(node * n, node * branchhead) {
+bool checkBranch(node * n, node * branchhead) {
 
+    for (int num : n->nums) {
+        // (base case kinda)
+        if (binary_search(branchhead->nums.begin(), branchhead->nums.end(), num) == false) {
+            return false;
+        }
+    }
+
+    /*
+        Case 1: head has no children (base case kinda)
+        - add head to the out list of the node we are adding
+        - add node to the in list of the head
+    */
+    if (branchhead->in.empty()) {
+        n->out.push_back(branchhead);
+        branchhead->in.push_back(n);
+        return true;
+    }
+    else {
+        int counter = 0;
+        for(node * child : branchhead->in) {
+            counter += checkBranch(n, child);
+        }
+
+        /*
+            Case 2: head has no children containing the numbers
+            - add head to the out list of the node we are adding
+            - add node to the in list of the head
+        */
+        if (counter == 0) {
+            n->out.push_back(branchhead);
+            branchhead->in.push_back(n);
+            return true;
+        }
+        /* 
+            Case 3: when at least one child has the numbers
+            - this case is accounted for when we do the recursive call
+        */
+    }
+
+    return true;
 }
-
-bool checkBranchHelper()
