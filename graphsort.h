@@ -7,11 +7,14 @@
 
 using namespace std;
 
+int iter=0;
+
 struct node {
     vector<node*> out;
     vector<node*> in;
     vector<int> nums;
     int size = 0;
+    bool visited = 0;
 };
 
 struct graph {
@@ -57,6 +60,29 @@ void printgraph(graph g) {
     }
 }
 
+void saveGraphToFile(graph g, string file) {
+
+    ofstream myfile;
+    myfile.open(file);
+
+    for (node *cur_n : g.nodes) {
+        for (node *out_n : cur_n->out) {
+            //print cur node nums
+            for (int num : cur_n->nums) {
+                myfile << num << ",";
+            }
+            myfile << "->";
+            //print out node nums
+            for (int num : out_n->nums) {
+                myfile << num << ",";
+            }
+            myfile << endl;
+        }
+    }
+
+    myfile.close();
+}
+
 void printgraphheadnodes(graph g) {
     for (node *cur_n : g.headnodes) {
         cout << "Head Node: ";
@@ -67,7 +93,11 @@ void printgraphheadnodes(graph g) {
     }
 }
 
-bool checkBranch(node * n, node * branchhead) {
+bool checkBranch(node * n, node * branchhead, graph g) {
+
+    if (branchhead->visited) {
+        return false;
+    }
 
     for (int num : n->nums) {
         // (base case kinda)
@@ -89,7 +119,27 @@ bool checkBranch(node * n, node * branchhead) {
     else {
         int counter = 0;
         for(node * child : branchhead->in) {
-            counter += checkBranch(n, child);
+            // cout << "Recurse on node: ";
+            // printnode(child);
+            iter++;
+            //cout << iter << endl;
+            if (iter > 1000000000) {
+                cout << "Failed:" << endl;
+                cout << "adding node: ";
+                printnode(n);
+                cout << "\nrecursing on node: ";
+                printnode(branchhead);
+                cout << "\n\nCurrent Graph:" << endl;
+                printgraphheadnodes(g);
+                exit(0);
+            }
+
+            //check to see if it is recursing on itself
+            if (n == child) {
+                return false;
+            }
+            branchhead->visited = true;
+            counter += checkBranch(n, child, g);
         }
 
         /*
@@ -109,4 +159,10 @@ bool checkBranch(node * n, node * branchhead) {
     }
 
     return true;
+}
+
+void setGraphToUnvisited(graph g) {
+    for(node * n : g.nodes) {
+        n->visited = 0;
+    }
 }

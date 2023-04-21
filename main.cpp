@@ -8,8 +8,8 @@ using namespace std;
 int main(int argc, char* argv[]) {
 
     //read input file
-    if (argc != 2) {
-        cout << "Usage: <inputfilename.txt>" << endl;
+    if (argc != 3) {
+        cout << "Usage: <inputfilename.txt> <outputfilename.txt>" << endl;
         return -1;
     }
     //create initilization graph
@@ -48,12 +48,21 @@ int main(int argc, char* argv[]) {
 
     graph g;
 
+    int numnodes = initg.nodes.size();
+    int nodecount = 1;
+
     //loop through and add each node to the new graph according to the following algorithm
-    
+    cout << "Building Graph..." << endl;
     for (node * n : initg.nodes) {
+        cout << "Node " << nodecount << "/" << numnodes << endl;
+        nodecount++;
+        
         // cout << "Adding node: ";
         // printnode(n);
-        // printgraph(g);
+
+        //set graph to unvisited
+        setGraphToUnvisited(g);
+
         //add node to graph
         g.nodes.push_back(n);
 
@@ -64,19 +73,20 @@ int main(int argc, char* argv[]) {
         */
 
         for (node * cur : g.headnodes) {
-            checkBranch(n, cur);
+            checkBranch(n, cur, g);
         }
 
         //check if the node that we added made any connections: if it didn't then add it to the headnodes of the graph
         if(n->out.empty()) {
             g.headnodes.push_back(n);
         }
+        //cout << "Node added Successfully" << endl;
     }
     
 
-    printgraph(g);
-    //printgraphheadnodes(g);
-
+    // printgraph(g); 
+    cout << "finished building graph in " << iter << " Node Checks." << endl;
+    saveGraphToFile(g, argv[2]);
 
     return -1;
 }
