@@ -17,9 +17,14 @@ struct node {
     bool visited = 0;
 };
 
+struct tree {
+    node * head;
+    vector<node*> leafs;
+};
+
 struct graph {
     vector<node*> nodes;
-    vector<node*> headnodes;
+    vector<tree*> trees;
     int size = 0;
 };
 
@@ -84,9 +89,9 @@ void saveGraphToFile(graph g, string file) {
 }
 
 void printgraphheadnodes(graph g) {
-    for (node *cur_n : g.headnodes) {
+    for (tree *cur_t : g.trees) {
         cout << "Head Node: ";
-        for (int num : cur_n->nums) {
+        for (int num : cur_t->head->nums) {
             cout << num << ",";
         }
         cout << endl;
@@ -123,16 +128,16 @@ bool checkBranch(node * n, node * branchhead, graph g) {
             // printnode(child);
             iter++;
             //cout << iter << endl;
-            if (iter > 1000000000) {
-                cout << "Failed:" << endl;
-                cout << "adding node: ";
-                printnode(n);
-                cout << "\nrecursing on node: ";
-                printnode(branchhead);
-                cout << "\n\nCurrent Graph:" << endl;
-                printgraphheadnodes(g);
-                exit(0);
-            }
+            // if (iter > 1000000000) {
+            //     cout << "Failed:" << endl;
+            //     cout << "adding node: ";
+            //     printnode(n);
+            //     cout << "\nrecursing on node: ";
+            //     printnode(branchhead);
+            //     cout << "\n\nCurrent Graph:" << endl;
+            //     printgraphheadnodes(g);
+            //     exit(0);
+            // }
 
             //check to see if it is recursing on itself
             if (n == child) {

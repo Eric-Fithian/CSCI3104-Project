@@ -56,9 +56,7 @@ int main(int argc, char* argv[]) {
     for (node * n : initg.nodes) {
         cout << "Node " << nodecount << "/" << numnodes << endl;
         nodecount++;
-        
-        // cout << "Adding node: ";
-        // printnode(n);
+        //cout << "Headnodes: " << g.trees.size() << endl;
 
         //set graph to unvisited
         setGraphToUnvisited(g);
@@ -66,19 +64,55 @@ int main(int argc, char* argv[]) {
         //add node to graph
         g.nodes.push_back(n);
 
+        // Go through each tree in the graph, and then through each leaf
+        for (tree * t : g.trees) {
+            bool changedAllLeafs = true;
+
+            int leafindex = 0;
+            for (node * leaf : t->leafs) {
+                if (n != leaf) {
+                    for (int num : n->nums) {
+                        // check if node is in leaf
+                        if (binary_search(leaf->nums.begin(), leaf->nums.end(), num) == true) {
+                            //connect them
+                            n->out.push_back(leaf);
+                            leaf->in.push_back(n);
+                            t->leafs[leafindex] = n;
+                        }
+                        else {
+                            changedAllLeafs = false;
+                            break;
+                        }
+                    }
+                    if (changedAllLeafs == false) {
+                        break;
+                    }
+                }
+                leafindex++;
+            }
+
+            //if node wasn't connect to any leafs, then start from head of tree and work downward
+            if (changedAllLeafs == false) {
+                checkBranch(n, t->head, g);
+            }
+        }
+        
         /*
         start at each head node:
             if the nums in n are all in cur
 
         */
 
-        for (node * cur : g.headnodes) {
-            checkBranch(n, cur, g);
-        }
+        // for (node * cur : g.headnodes) {
+        //     checkBranch(n, cur, g);
+        // }
 
-        //check if the node that we added made any connections: if it didn't then add it to the headnodes of the graph
+        //check if the node that we added made any connections: if it didn't then add it to the trees of the graph
         if(n->out.empty()) {
-            g.headnodes.push_back(n);
+            tree * t = new tree;
+            t->head = n;
+            t->leafs.push_back(n);
+            g.trees.push_back(t);
         }
         //cout << "Node added Successfully" << endl;
     }
