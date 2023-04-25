@@ -47,14 +47,16 @@ int main(int argc, char* argv[]) {
 
     iter = 0;
 
-    //buildGraphTopDown(initg, g);
-    //buildGraphBottomUp(initg, g);
-    buildGraphFromLeaves(initg, g);
+    buildGraphTopDown(initg, g);
+    //buildGraphFromLeaves(initg, g);
 
     cout << "finished building graph in " << iter << " Node Checks." << endl;
     saveGraphToFile(g, argv[2]);
-    //printgraph(g);
-    printleafs(g);
+
+    cout << "----Cheching Graph Correctness----" << endl;
+    if (checkCorrectness(g)) {
+        cout << "----Graph Correctness Check Complete----" << endl;
+    }
 
     return -1;
 }

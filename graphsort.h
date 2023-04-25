@@ -43,9 +43,6 @@ void setGraphToUnvisited(graph * g);
 bool checkNodeMatch(node * n1, node * n2);
 void setParentsVisisted(node * n);
 
-void checkBranchBottomUp(node * n, node * leaf, graph * g);
-void buildGraphBottomUp(graph * initg, graph * g);
-
 bool checkBranchTopDown(node * n, node * branchhead, graph * g, tree * t);
 void buildGraphTopDown(graph * initg, graph * g);
 
