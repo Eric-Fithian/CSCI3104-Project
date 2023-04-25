@@ -7,7 +7,7 @@
 
 using namespace std;
 
-int iter=0;
+extern int iter;
 
 struct node {
     vector<node*> out;
@@ -25,149 +25,35 @@ struct tree {
 struct graph {
     vector<node*> nodes;
     vector<tree*> trees;
+    vector<node*> leafs;
     int size = 0;
 };
 
-bool compareByNodeSize(node *a, node *b) {
-    return a->size > b->size;
-}
+bool compareByNodeSize(node *a, node *b);
+void printnode(node * n);
+void printnodes(graph * g);
+void printnodes(graph * g);
+void printgraph(graph * g);
+void saveGraphToFile(graph * g, string file);
+void printgraphheadnodes(graph * g);
 
-void printnode(node * n) {
-    for (int num : n->nums) {
-        cout << num << ",";
-    }
-    cout << endl;
-}
+void printleafs(graph * g);
 
-void printnodes(graph g) {
-    for (node *cur_n : g.nodes) {
-        for (int num : cur_n->nums) {
-            cout << num << ",";
-        }
-        cout << endl;
-    }
-}
+void setGraphToUnvisited(graph * g);
+bool checkNodeMatch(node * n1, node * n2);
+void setParentsVisisted(node * n);
 
-void printgraph(graph g) {
-    for (node *cur_n : g.nodes) {
-        for (node *out_n : cur_n->out) {
-            //print cur node nums
-            for (int num : cur_n->nums) {
-                cout << num << ",";
-            }
-            cout << "->";
-            //print out node nums
-            for (int num : out_n->nums) {
-                cout << num << ",";
-            }
-            cout << endl;
-        }
-    }
-}
+void checkBranchBottomUp(node * n, node * leaf, graph * g);
+void buildGraphBottomUp(graph * initg, graph * g);
 
-void saveGraphToFile(graph g, string file) {
+bool checkBranchTopDown(node * n, node * branchhead, graph * g, tree * t);
+void buildGraphTopDown(graph * initg, graph * g);
 
-    ofstream myfile;
-    myfile.open(file);
+void buildGraphFromLeaves(graph * initg, graph * g);
+void checkParents(graph * g, node * n, node * child);
 
-    for (node *cur_n : g.nodes) {
-        for (node *out_n : cur_n->out) {
-            //print cur node nums
-            for (int num : cur_n->nums) {
-                myfile << num << ",";
-            }
-            myfile << "->";
-            //print out node nums
-            for (int num : out_n->nums) {
-                myfile << num << ",";
-            }
-            myfile << endl;
-        }
-    }
+bool checkCorrectness(graph * g);
 
-    myfile.close();
-}
 
-void printgraphheadnodes(graph g) {
-    for (tree *cur_t : g.trees) {
-        cout << "Head Node: ";
-        for (int num : cur_t->head->nums) {
-            cout << num << ",";
-        }
-        cout << endl;
-    }
-}
 
-bool checkBranch(node * n, node * branchhead, graph g) {
 
-    if (branchhead->visited) {
-        return false;
-    }
-
-    for (int num : n->nums) {
-        // (base case kinda)
-        if (binary_search(branchhead->nums.begin(), branchhead->nums.end(), num) == false) {
-            return false;
-        }
-    }
-
-    /*
-        Case 1: head has no children (base case kinda)
-        - add head to the out list of the node we are adding
-        - add node to the in list of the head
-    */
-    if (branchhead->in.empty()) {
-        n->out.push_back(branchhead);
-        branchhead->in.push_back(n);
-        return true;
-    }
-    else {
-        int counter = 0;
-        for(node * child : branchhead->in) {
-            // cout << "Recurse on node: ";
-            // printnode(child);
-            iter++;
-            //cout << iter << endl;
-            // if (iter > 1000000000) {
-            //     cout << "Failed:" << endl;
-            //     cout << "adding node: ";
-            //     printnode(n);
-            //     cout << "\nrecursing on node: ";
-            //     printnode(branchhead);
-            //     cout << "\n\nCurrent Graph:" << endl;
-            //     printgraphheadnodes(g);
-            //     exit(0);
-            // }
-
-            //check to see if it is recursing on itself
-            if (n == child) {
-                return false;
-            }
-            branchhead->visited = true;
-            counter += checkBranch(n, child, g);
-        }
-
-        /*
-            Case 2: head has no children containing the numbers
-            - add head to the out list of the node we are adding
-            - add node to the in list of the head
-        */
-        if (counter == 0) {
-            n->out.push_back(branchhead);
-            branchhead->in.push_back(n);
-            return true;
-        }
-        /* 
-            Case 3: when at least one child has the numbers
-            - this case is accounted for when we do the recursive call
-        */
-    }
-
-    return true;
-}
-
-void setGraphToUnvisited(graph g) {
-    for(node * n : g.nodes) {
-        n->visited = 0;
-    }
-}
