@@ -45,12 +45,12 @@ void printgraph(graph * g) {
             for (int num : cur_n->nums) {
                 cout << num << ",";
             }
-            cout << "->";
+            cout << "\b->";
             //print out node nums
             for (int num : out_n->nums) {
                 cout << num << ",";
             }
-            cout << endl;
+            cout << "\b \n";
         }
     }
 }
@@ -67,17 +67,32 @@ void saveGraphToFile(graph * g, string file) {
             if (out_n == nullptr) {
                 continue;
             }
-
+            
             //print cur node nums
+            bool isfirst = true;
             for (int num : cur_n->nums) {
-                myfile << num << ",";
+                if (isfirst) {
+                    myfile << num;
+                    isfirst = false;
+                }
+                else {
+                    myfile << "," << num;
+                }
+                
             }
-            myfile << "->";
+            myfile << " -> ";
             //print out node nums
+            isfirst = true;
             for (int num : out_n->nums) {
-                myfile << num << ",";
+                if (isfirst) {
+                    myfile << num;
+                    isfirst = false;
+                }
+                else {
+                    myfile << "," << num;
+                }
             }
-            myfile << endl;
+            myfile << "\n";
         }
     }
 
