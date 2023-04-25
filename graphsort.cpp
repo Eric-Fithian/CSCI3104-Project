@@ -37,6 +37,10 @@ void printleafs(graph * g) {
 void printgraph(graph * g) {
     for (node *cur_n : g->nodes) {
         for (node *out_n : cur_n->out) {
+            if (out_n == nullptr) {
+                continue;
+            }
+
             //print cur node nums
             for (int num : cur_n->nums) {
                 cout << num << ",";
@@ -53,11 +57,17 @@ void printgraph(graph * g) {
 
 void saveGraphToFile(graph * g, string file) {
 
+    cout << "----Saving Graph to File----" << endl;
+    
     ofstream myfile;
     myfile.open(file);
 
     for (node *cur_n : g->nodes) {
         for (node *out_n : cur_n->out) {
+            if (out_n == nullptr) {
+                continue;
+            }
+
             //print cur node nums
             for (int num : cur_n->nums) {
                 myfile << num << ",";
@@ -85,6 +95,10 @@ void printgraphheadnodes(graph * g) {
 }
 
 bool checkNodeMatch(node * n1, node * n2) {
+    if (n1 == nullptr || n2 == nullptr) {
+        cout << "NULL COMPARISON" << endl;
+    }
+
     iter++;
     bool match = true;
     for (int num : n1->nums) {
@@ -100,7 +114,17 @@ bool checkNodeMatch(node * n1, node * n2) {
 
 void setParentsVisisted(node * n) {
     for (node * parent : n->out) {
+        if (parent == nullptr) {
+            continue;
+        }
         parent->visited = true;
+        setParentsVisisted(parent);
+    }
+}
+
+void setGraphToUnvisited(graph * g) {
+    for(node * n : g->nodes) {
+        n->visited = 0;
     }
 }
 
@@ -135,11 +159,6 @@ void checkBranchBottomUp(node * n, node * leaf, graph * g) {
     }
 }
 
-void setGraphToUnvisited(graph * g) {
-    for(node * n : g->nodes) {
-        n->visited = 0;
-    }
-}
 
 void buildGraphBottomUp(graph * initg, graph * g) {
     int numnodes = initg->nodes.size();
@@ -368,12 +387,17 @@ void buildGraphFromLeaves(graph * initg, graph * g) {
                 //they match
                 if (checkNodeMatch(n, leaf)) {
                     //check if node->out to see if matched node is before it
+                    int i = 0;
                     for (node * temp : n->out) {
+                        if (temp == nullptr) {
+                            continue;
+                        }
                         if (checkNodeMatch(leaf, temp)) {
                             //remove temp node connection
-                            n->out.erase(remove(n->out.begin(), n->out.end(),temp), n->out.end());
+                            n->out[i] = nullptr;
                             
                         }
+                        i++;
                     }
 
                     //if not already a leaf replace the current leaf
@@ -405,11 +429,18 @@ void buildGraphFromLeaves(graph * initg, graph * g) {
 }
 
 void checkParents(graph * g, node * n, node * child) {
+    if (child == nullptr) {
+        return;
+    }
     if (n == child) {
         return;
     }
     child->visited = true;
     for (node * parent : child->out) {
+        if (parent == nullptr) {
+            continue;
+        }
+
         //if already visited then return
         if (parent->visited == true) {
             return;
@@ -421,11 +452,20 @@ void checkParents(graph * g, node * n, node * child) {
         //if match
         if(checkNodeMatch(n, parent)) {
             //check if node->out to see if matched node is before it
+            int i = 0;
             for (node * temp : n->out) {
+                if (temp == nullptr){
+                    continue;
+                }
                 if (checkNodeMatch(parent, temp)) {
                     //remove temp node connection
-                    n->out.erase(remove(n->out.begin(), n->out.end(),temp), n->out.end());
+
+                    n->out[i] = nullptr;
+                    //n->out.erase(remove(n->out.begin(), n->out.end(),temp), n->out.end());
                 }
+                
+                
+                i++;
             }
 
             n->out.push_back(parent);
