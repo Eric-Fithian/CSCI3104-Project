@@ -347,7 +347,7 @@ void checkParents(graph * g, node * n, node * child) {
     }
 }
 
-bool checkCorrectness(graph * g) {
+bool checkConnectionsCorrectness(graph * g) {
     bool correct = true;
     for (node * n : g->nodes) {
         for (node * n1 : n->out) {

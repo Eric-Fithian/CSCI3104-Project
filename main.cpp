@@ -11,6 +11,7 @@ int main(int argc, char* argv[]) {
     }
     //create initilization graph
     graph * initg = new graph;
+    initg->size = 0;
 
     //read file into graph
     string inFile = argv[1];
@@ -47,14 +48,24 @@ int main(int argc, char* argv[]) {
 
     iter = 0;
 
+    auto start = high_resolution_clock::now();
+
     buildGraphTopDown(initg, g);
     //buildGraphFromLeaves(initg, g);
+
+    auto stop = high_resolution_clock::now();
+
+    auto duration = duration_cast<milliseconds>(stop - start);
+ 
+    cout << "Time to build graph: " << (duration.count() / 1000.) << " seconds" << endl;
+
+    cout << "Average time per node: " << (duration.count() / (double) initg->size) << " milliseconds" << endl;;
 
     cout << "finished building graph in " << iter << " Node Checks." << endl;
     saveGraphToFile(g, argv[2]);
 
-    cout << "----Cheching Graph Correctness----" << endl;
-    if (checkCorrectness(g)) {
+    cout << "----Checking Graph Correctness----" << endl;
+    if (checkConnectionsCorrectness(g)) {
         cout << "----Graph Correctness Check Complete----" << endl;
     }
 

@@ -1,3 +1,4 @@
+#include <chrono>
 #include <vector>
 #include <iostream>
 #include <fstream>
@@ -6,6 +7,7 @@
 #include <algorithm>
 
 using namespace std;
+using namespace std::chrono;
 
 extern int iter;
 
@@ -49,7 +51,7 @@ void buildGraphTopDown(graph * initg, graph * g);
 void buildGraphFromLeaves(graph * initg, graph * g);
 void checkParents(graph * g, node * n, node * child);
 
-bool checkCorrectness(graph * g);
+bool checkConnectionsCorrectness(graph * g);
 
 
 
