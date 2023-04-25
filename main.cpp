@@ -54,7 +54,7 @@ int main(int argc, char* argv[]) {
     cout << "finished building graph in " << iter << " Node Checks." << endl;
     saveGraphToFile(g, argv[2]);
     //printgraph(g);
-    //printleafs(g);
+    printleafs(g);
 
     return -1;
 }

@@ -10,7 +10,6 @@ void printnode(node * n) {
     for (int num : n->nums) {
         cout << num << ",";
     }
-    cout << endl;
 }
 
 void printnodes(graph * g) {
@@ -368,16 +367,24 @@ void buildGraphFromLeaves(graph * initg, graph * g) {
                 leaf->visited = true;
                 //they match
                 if (checkNodeMatch(n, leaf)) {
+                    //check if node->out to see if matched node is before it
+                    for (node * temp : n->out) {
+                        if (checkNodeMatch(leaf, temp)) {
+                            //remove temp node connection
+                            n->out.erase(remove(n->out.begin(), n->out.end(),temp), n->out.end());
+                            
+                        }
+                    }
+
+                    //if not already a leaf replace the current leaf
                     if (!isleaf) {
                         n->out.push_back(leaf);
-                        leaf->in.push_back(n);
                         g->leafs[leafindex] = n;
                         setParentsVisisted(leaf);
                         isleaf = true;
                     }
-                    else {
+                    else { // don't make it a leaf but remove current leaf
                         n->out.push_back(leaf);
-                        leaf->in.push_back(n);
                         g->leafs[leafindex] = nullptr;
                         setParentsVisisted(leaf);
                     }
@@ -407,24 +414,24 @@ void checkParents(graph * g, node * n, node * child) {
         if (parent->visited == true) {
             return;
         }
+
         //set parent to visited
         parent->visited = true;
+
         //if match
         if(checkNodeMatch(n, parent)) {
             //check if node->out to see if matched node is before it
             for (node * temp : n->out) {
                 if (checkNodeMatch(parent, temp)) {
                     //remove temp node connection
-                    remove(temp->in.begin(),temp->in.end(),n);
-                    remove(n->out.begin(),n->out.end(),temp);
+                    n->out.erase(remove(n->out.begin(), n->out.end(),temp), n->out.end());
                 }
             }
 
             n->out.push_back(parent);
-            parent->in.push_back(n);
             setParentsVisisted(parent);
         }
-        //not a match, recurse on parent
+        //not a match, recurse on parents
         else {
             checkParents(g, n, parent);
         }
